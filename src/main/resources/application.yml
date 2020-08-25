@@ -1,0 +1,9 @@
+spring:
+  mail:
+    host: smtp.163.com
+    password: TTWMWJXDYQMTKYEJ
+    username: sixsixsix517@163.com
+server:
+  port: 9000
+
+
