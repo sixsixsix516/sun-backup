@@ -34,6 +34,11 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>com.sixsixsix</groupId>
+                <artifactId>sun-deploy-maven-plugin</artifactId>
+                <version>1.0</version>
+            </plugin>
         </plugins>
     </build>
 

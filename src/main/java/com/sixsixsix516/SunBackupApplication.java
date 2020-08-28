@@ -25,25 +25,34 @@ import java.time.LocalDate;
 @SpringBootApplication
 public class SunBackupApplication implements CommandLineRunner {
 
-    private static String username = "test";
-    private static String password = "test";
-    private static String db = "test";
-    private static String path = "/home/test/backup/file/";
+    private static String username = "root";
+    private static String password = "root";
+    private static String db = "superman";
+    private static String path = "/home/superman/backup/file/";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         SpringApplication.run(SunBackupApplication.class, args);
     }
 
+
     @Override
     public void run(String... args) throws Exception {
-        String bashFile = generateBash();
-        execute(bashFile);
+        autoBackup();
     }
 
     /**
      * 生成自动备份命令
      */
-    @Scheduled(cron = "1 0 0 * * *")
+    @Scheduled(cron = "1 0 0 * * ?")
+    public void autoBackup() throws IOException {
+        System.out.println("------------------------------------------");
+        System.out.println("开始生成备份命令");
+        String bashFile = generateBash();
+        System.out.println("开始执行");
+        execute(bashFile);
+        System.out.println("------------------------------------------");
+    }
+
     public String generateBash() {
         String bash = "mysqldump  --column-statistics=0  -u" + username + " --port=12631  -p'" + password + "'  " + db + ">" + path + db + "-" + LocalDate.now() + ".sql";
         String fullPath = path + db + ".sh";
@@ -68,8 +77,7 @@ public class SunBackupApplication implements CommandLineRunner {
     private JavaMailSender javaMailSender;
 
     public void execute(String bashFile) throws IOException {
-        Process per = Runtime.getRuntime().exec("chmod +x " + bashFile);
-
+        Runtime.getRuntime().exec("chmod +x " + bashFile);
         Process process = Runtime.getRuntime().exec(bashFile);
         //取得命令结果的输出流
         InputStream fis = process.getInputStream();
@@ -89,8 +97,8 @@ public class SunBackupApplication implements CommandLineRunner {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom("sixsixsix517@163.com");
             helper.setTo("sixsixsix517@163.com");
-            helper.setSubject("业务名" + LocalDate.now() + "备份");
-            helper.setText("业务名备份");
+            helper.setSubject("超人安装" + LocalDate.now() + "备份");
+            helper.setText("超人安装备份");
             //验证文件数据是否为空
             FileSystemResource file = null;
             for (String s : fileArray) {
