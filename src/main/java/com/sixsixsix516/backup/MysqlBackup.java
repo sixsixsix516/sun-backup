@@ -16,7 +16,7 @@ public class MysqlBackup implements Backup {
 	 * MySQL备份命令
 	 */
 //	private String MYSQL_BACKUP_BASH = "mysqldump  --column-statistics=0 --host=%s --port=%s  -u%s  -password'%s'  %s>%s";
-	private String MYSQL_BACKUP_BASH = "mysqldump  --host=%s --port=%s  -u%s  -p%s  %s>%s";
+	private String MYSQL_BACKUP_BASH = "mysqldump --column-statistics=0 --host=%s --port=%s  -u%s  -p%s  %s>%s";
 
 
 	@Override
