@@ -1,22 +1,16 @@
 package com.sixsixsix516;
 
+import com.sixsixsix516.backup.mysql.MysqlProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.io.*;
-import java.time.LocalDate;
+import java.io.File;
+import java.util.List;
 
 /**
  * @author sunlin
@@ -25,93 +19,80 @@ import java.time.LocalDate;
 @SpringBootApplication
 public class SunBackupApplication implements CommandLineRunner {
 
-    private static String username = "root";
-    private static String password = "root";
-    private static String db = "superman";
-    private static String path = "/home/superman/backup/file/";
+	@Autowired
+	private Back back;
+	@Autowired
+	private ApplicationArguments applicationArguments;
 
-    public static void main(String[] args) {
-        SpringApplication.run(SunBackupApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(SunBackupApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) {
+		// 解析参数
+
+		List<String> host = applicationArguments.getOptionValues("host");
+
+		if (host != null && host.size() > 0) {
+			MysqlProperties.host = host.get(0);
+		} else {
+			MysqlProperties.host = "127.0.0.1";
+		}
+
+		List<String> port = applicationArguments.getOptionValues("port");
+		if (port != null && port.size() > 0) {
+			MysqlProperties.port = port.get(0);
+		} else {
+			MysqlProperties.port = "3306";
+		}
+
+		List<String> username = applicationArguments.getOptionValues("username");
+		if (username != null && username.size() > 0) {
+			MysqlProperties.username = username.get(0);
+		} else {
+			MysqlProperties.username = "root";
+		}
+
+		List<String> password = applicationArguments.getOptionValues("password");
+		if (password != null && password.size() > 0) {
+			MysqlProperties.password = password.get(0);
+		} else {
+			MysqlProperties.password = "root";
+		}
+
+		List<String> db = applicationArguments.getOptionValues("db");
+		if (db == null || db.size() == 0) {
+			throw new RuntimeException("db 参数未设置");
+		}
+		MysqlProperties.db = db.get(0);
 
 
-    @Override
-    public void run(String... args) throws Exception {
-        autoBackup();
-    }
+		MysqlProperties.suffix = ".sql";
 
-    /**
-     * 生成自动备份命令
-     */
-    @Scheduled(cron = "1 0 0 * * ?")
-    public void autoBackup() throws IOException {
-        System.out.println("------------------------------------------");
-        System.out.println("开始生成备份命令");
-        String bashFile = generateBash();
-        System.out.println("开始执行");
-        execute(bashFile);
-        System.out.println("------------------------------------------");
-    }
+		ApplicationHome ah = new ApplicationHome(getClass());
+		File file = ah.getSource();
+		MysqlProperties.filePath = file.getParentFile().toString() + File.separator;
 
-    public String generateBash() {
-        String bash = "mysqldump  --column-statistics=0  -u" + username + " --port=12631  -p'" + password + "'  " + db + ">" + path + db + "-" + LocalDate.now() + ".sql";
-        String fullPath = path + db + ".sh";
-        try (FileWriter fileWriter = new FileWriter(new File(fullPath))) {
-            fileWriter.append("#!/bin/sh");
-            fileWriter.append("\n");
-            fileWriter.append(bash);
-            fileWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fullPath;
-    }
+		List<String> title = applicationArguments.getOptionValues("title");
+		if (title != null && title.size() > 0) {
+			MysqlProperties.title = title.get(0);
+		} else {
+			MysqlProperties.title = "备份";
+		}
 
-    @Bean
-    @ConfigurationProperties(prefix = "spring.mail")
-    public JavaMailSender javaMailSender() {
-        return new JavaMailSenderImpl();
-    }
+		List<String> sendToEmail = applicationArguments.getOptionValues("sendToEmail");
+		if (sendToEmail != null && sendToEmail.size() > 0) {
+			MysqlProperties.sendToEmail = sendToEmail.get(0);
+		} else {
+			throw new RuntimeException("sendToEmail 参数未设置");
+		}
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+		// 当前操作系统
+		MysqlProperties.os = System.getProperty("os.name");
 
-    public void execute(String bashFile) throws IOException {
-        Runtime.getRuntime().exec("chmod +x " + bashFile);
-        Process process = Runtime.getRuntime().exec(bashFile);
-        //取得命令结果的输出流
-        InputStream fis = process.getInputStream();
-        //用一个读输出流类去读
-        InputStreamReader isr = new InputStreamReader(fis);
-        //用缓冲器读行
-        BufferedReader br = new BufferedReader(isr);
-        String line = null;
-        //直到读完为止
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-        }
-        String[] fileArray = {path + db + "-" + LocalDate.now() + ".sql"};
-
-        MimeMessage message = javaMailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-            helper.setFrom("sixsixsix517@163.com");
-            helper.setTo("sixsixsix517@163.com");
-            helper.setSubject("超人安装" + LocalDate.now() + "备份");
-            helper.setText("超人安装备份");
-            //验证文件数据是否为空
-            FileSystemResource file = null;
-            for (String s : fileArray) {
-                //添加附件
-                file = new FileSystemResource(s);
-                String fileName = s.substring(s.lastIndexOf(File.separator));
-                helper.addAttachment(fileName, file);
-            }
-            javaMailSender.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
-    }
-
+		// 启动后立即备份一次
+		back.back();
+	}
 
 }
