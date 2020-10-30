@@ -15,12 +15,11 @@ public class MysqlBackup implements Backup {
 	/**
 	 * MySQL备份命令
 	 */
-//	private String MYSQL_BACKUP_BASH = "mysqldump  --column-statistics=0 --host=%s --port=%s  -u%s  -password'%s'  %s>%s";
-	private String MYSQL_BACKUP_BASH = "mysqldump --column-statistics=0 --host=%s --port=%s  -u%s  -p%s  %s>%s";
-
+	private String MYSQL_BACKUP_BASH = "mysqldump %s --host=%s --port=%s  -u%s  -p%s  %s>%s";
 
 	@Override
 	public String backup() {
+		// nohup java -jar sun-backup.jar  --password='!!!@JxhJXH2020!' --db=jxh --title=匠乡禾备份 --sendToEmail=sixsixsix517@163.com &
 		boolean isWindows = MysqlProperties.os.startsWith("Windows");
 		String bashSuffix = isWindows ? ".cmd" : ".sh";
 		// 备份文件的路径
@@ -29,7 +28,7 @@ public class MysqlBackup implements Backup {
 		String backSqlPath = MysqlProperties.filePath + LocalDate.now() + MysqlProperties.db + MysqlProperties.suffix;
 
 		// 需要执行的最终备份命令内容
-		String backupBashContent = String.format(MYSQL_BACKUP_BASH, MysqlProperties.host, MysqlProperties.port, MysqlProperties.username,
+		String backupBashContent = String.format(MYSQL_BACKUP_BASH, "5".equals(MysqlProperties.version) ? "" : "--column-statistics=0", MysqlProperties.host, MysqlProperties.port, MysqlProperties.username,
 				isWindows ? MysqlProperties.password : "'" + MysqlProperties.password + "'",
 				MysqlProperties.db, backSqlPath);
 

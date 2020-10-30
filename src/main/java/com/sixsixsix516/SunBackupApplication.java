@@ -91,6 +91,13 @@ public class SunBackupApplication implements CommandLineRunner {
 		// 当前操作系统
 		MysqlProperties.os = System.getProperty("os.name");
 
+		List<String> version = applicationArguments.getOptionValues("version");
+		if (version != null && version.size() > 0) {
+			MysqlProperties.version = version.get(0);
+		} else {
+			throw new RuntimeException("sendToEmail 参数未设置");
+		}
+
 		// 启动后立即备份一次
 		back.back();
 	}

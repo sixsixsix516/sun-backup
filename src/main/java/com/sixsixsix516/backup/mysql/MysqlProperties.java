@@ -28,10 +28,16 @@ public class MysqlProperties {
 	 */
 	public static String os;
 
+	/**
+	 * mysql版本
+	 */
+	public static String version;
+
 	// ===================  发送邮箱需要的参数 =====================
 
 	public static String title;
 	public static String sendToEmail;
+
 
 
 }
