@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.Properties;
+
 /**
  * 邮箱配置类
  *
@@ -17,7 +19,11 @@ public class MailConfig {
 	@Bean
 	@ConfigurationProperties(prefix = "spring.mail")
 	public JavaMailSender javaMailSender() {
-		return new JavaMailSenderImpl();
+		JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+		Properties props = new Properties();
+		props.put("mail.smtp.ssl.enable", true);
+		javaMailSender.setJavaMailProperties(props);
+		return javaMailSender;
 	}
 
 }

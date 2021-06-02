@@ -35,7 +35,6 @@ public class Environment {
      * 现在先写死全部绑定到Mysql, 因为只支持Mysql, 后续扩展增加了新的数据库可以动态绑定配置
      */
     public void prepare() {
-
         // 1.设置字段默认值
         setMysqlDefaultValue();
 
@@ -44,7 +43,6 @@ public class Environment {
         Set<String> optionNames = applicationArguments.getOptionNames();
         optionNames.forEach(key -> {
             List<String> values = applicationArguments.getOptionValues(key);
-            log.info("获取到参数: k:{}, v:{}",key,values);
             if (values.size() > 0) {
                 for (Field mysqlField : mysqlFields) {
                     if (mysqlField.getName().equals(key)) {
@@ -57,7 +55,7 @@ public class Environment {
                 }
             }
         });
-        log.info("接受到输入参数: {}", MysqlProperties.print());
+        log.info("接收到输入参数: {}", MysqlProperties.print());
 
         // 3.校验参数
         checkParam();
@@ -100,6 +98,7 @@ public class Environment {
      */
     public void checkConnectionAndSetVersion() {
         String url = "jdbc:mysql://" + MysqlProperties.host + ":" + MysqlProperties.port + "/" + MysqlProperties.db + "?useSSL=false&characterEncoding=utf-8&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&";
+        log.info("检查数据库链接...");
         try (Connection conn = DriverManager.getConnection(url, MysqlProperties.username, MysqlProperties.password)) {
             Class.forName("com.mysql.jdbc.Driver");
             DatabaseMetaData metaData = conn.getMetaData();

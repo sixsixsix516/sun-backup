@@ -1,6 +1,7 @@
 package com.sixsixsix516.utils;
 
 import com.sixsixsix516.backup.mysql.MysqlProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
  * @author sun 2020/10/27 11:40
  */
 @Component
+@Slf4j
 public class MailUtil {
 
 	@Autowired
@@ -33,6 +35,7 @@ public class MailUtil {
 	 * @param filePath    要发送的sql文件路径
 	 */
 	public void sendBackFile(String filePath) {
+		log.info("将备份文件发送到邮箱: {}",MysqlProperties.sendToEmail);
 		MimeMessage message = javaMailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
@@ -44,8 +47,10 @@ public class MailUtil {
 			FileSystemResource file = new FileSystemResource(filePath);
 			String fileName = filePath.substring(filePath.lastIndexOf(File.separator));
 			helper.addAttachment(fileName, file);
+
 			javaMailSender.send(message);
-		} catch (MessagingException e) {
+			log.info("邮件发送成功");
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

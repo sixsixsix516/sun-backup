@@ -15,10 +15,10 @@ nohup java -jar 文件名  参数列表 &
 | host  | localhost |  非必填| mysql服务的ip
 | port  | 3306 |  非必填| mysql服务的端口
 | username  | root |  非必填| mysql服务的用户名
-| password  | root |  非必填| mysql服务的密码
+| password  | root |  非必填| mysql服务的密码  : 如果密码包含 $&%等特殊字符, 需要整体用 "" 包起来  例如 --password="@ewwew"
 | db  |  |  必填| 要备份的数据库名
 | title  |  |  非必填| 备份的文件发送邮件时的标题
-| sendToEmail  |  |  必填| 备份的文件发送到哪个邮件地址
+| sendToEmail  |  |  非必填| 备份的文件发送到哪个邮件地址
 
 
 完整示例命令  nohup java -jar sun-backup.jar --port=12631 --password=123456 --db=superman --title=新版超人备份 --sendToEmail=sixsixsix@163.com   &

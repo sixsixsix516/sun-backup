@@ -1,16 +1,14 @@
 package com.sixsixsix516.backup.mysql;
 
 import com.sixsixsix516.backup.Backup;
-import com.sixsixsix516.backup.mysql.MysqlProperties;
 import com.sixsixsix516.utils.FileUtil;
 import com.sixsixsix516.utils.MailUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.xml.ws.soap.Addressing;
 import java.io.IOException;
-import java.sql.DatabaseMetaData;
 import java.time.LocalDate;
 
 
@@ -20,6 +18,7 @@ import java.time.LocalDate;
  * @author sun 2020/10/27 11:55
  */
 @Component
+@Slf4j
 public class MysqlBackup implements Backup {
 
     @Autowired
@@ -47,7 +46,7 @@ public class MysqlBackup implements Backup {
                 MysqlProperties.host,
                 MysqlProperties.port,
                 MysqlProperties.username,
-                isWindows ? MysqlProperties.password : "'" + MysqlProperties.password + "'",
+                "\"" + MysqlProperties.password + "\"",
                 MysqlProperties.db,
                 backSqlPath);
 
@@ -60,15 +59,20 @@ public class MysqlBackup implements Backup {
         try {
             if (!isWindows) {
                 // 允许sh文件直接执行
+                log.info("检测到linux环境, 为备份命令文件增加可执行权限");
                 Runtime.getRuntime().exec("chmod +x " + backBashPath);
             }
             // 执行备份文件
+            log.info("开始备份");
             Runtime.getRuntime().exec(backBashPath);
+            log.info("备份成功: {}", backSqlPath);
         } catch (IOException e) {
             throw new RuntimeException("备份命令执行失败! " + e.getMessage());
         }
 
-        // 发送邮箱
-        mailUtil.sendBackFile(backSqlPath);
+        if (!StringUtils.isEmpty(MysqlProperties.sendToEmail)) {
+            // 发送邮箱
+            mailUtil.sendBackFile(backSqlPath);
+        }
     }
 }

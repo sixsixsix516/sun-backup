@@ -1,5 +1,7 @@
 package com.sixsixsix516.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -8,6 +10,7 @@ import java.io.IOException;
  *
  * @author sun 2020/10/27 12:37
  */
+@Slf4j
 public class FileUtil {
 
 	private FileUtil() {
@@ -21,6 +24,7 @@ public class FileUtil {
 	 * @return 是否创建成功 true成功 false失败
 	 */
 	public static boolean createBashFile(boolean isWindows, String path, String content) {
+		log.info("开始创建备份命令文件: {}",path);
 		try (FileWriter fileWriter = new FileWriter(path)) {
 			if (!isWindows) {
 				fileWriter.append("#!/bin/sh \n");
