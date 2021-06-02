@@ -3,7 +3,7 @@
 
 
 ### 使用方式
-1. https://github.com/sixsixsix516/sun-backup/releases 下载jar文件
+1. https://github.com/sixsixsix516/sun-backup/releases 下载jar文件 或自己拉下代码编译出jar
 2. 将jar文件放在服务器中
 3. 运行
 nohup java -jar 文件名  参数列表 &
