@@ -7,6 +7,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
+ * 邮箱配置类
+ *
  * @author sun 2020/10/27 11:39
  */
 @Configuration

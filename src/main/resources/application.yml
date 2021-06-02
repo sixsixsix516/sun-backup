@@ -1,4 +1,5 @@
 spring:
+  # 发送邮箱的账号配置信息
   mail:
     host: smtp.163.com
     password: TTWMWJXDYQMTKYEJ

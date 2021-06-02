@@ -1,4 +1,4 @@
-package com.sixsixsix516.mail;
+package com.sixsixsix516.utils;
 
 import com.sixsixsix516.backup.mysql.MysqlProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,12 @@ import java.io.*;
 import java.time.LocalDate;
 
 /**
+ * 邮箱工具类  用于发送备份文件到指定邮箱
+ *
  * @author sun 2020/10/27 11:40
  */
 @Component
-public class MyMail {
+public class MailUtil {
 
 	@Autowired
 	private JavaMailSender javaMailSender;
