@@ -1,9 +1,5 @@
 # mysql数据库自动备份
 
-# 求Star 会一直更新的
-
-
-
 ### 使用方式
 1. https://github.com/sixsixsix516/sun-backup/releases 下载jar文件 或自己拉下代码编译出jar
 2. 将jar文件放在服务器中
